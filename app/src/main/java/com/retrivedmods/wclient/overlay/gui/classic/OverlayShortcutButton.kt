@@ -51,18 +51,18 @@ class OverlayShortcutButton(
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
         val borderColor by animateColorAsState(
-            targetValue = if (module.isEnabled) Color.Red else Color.Transparent,
+            targetValue = if (module.isEnabled) Color(0xFFFF5CA6) else Color.Transparent,
             label = "borderColor"
         )
         val textColor by animateColorAsState(
-            targetValue = if (module.isEnabled) Color.Red else Color.White,
+            targetValue = if (module.isEnabled) Color(0xFFFF5CA6) else Color(0xFF4A2438),
             label = "textColor"
         )
 
         val bg = Brush.verticalGradient(
             listOf(
-                Color(0xFF111111),
-                Color(0xFF000000)
+                Color(0xFFFFFFFF),
+                Color(0xFFFFD6E8)
             )
         )
 

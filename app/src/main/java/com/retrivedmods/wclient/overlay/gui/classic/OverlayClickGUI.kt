@@ -2,7 +2,6 @@ package com.retrivedmods.wclient.overlay.gui.classic
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.view.WindowManager
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -58,22 +57,25 @@ import com.retrivedmods.wclient.game.ModuleContent
 import com.retrivedmods.wclient.overlay.OverlayManager
 import com.retrivedmods.wclient.overlay.OverlayWindow
 
-private val DarkBackground = Color(0xFF0A0A0A)
-private val SidebarBackground = Color(0xFF1A1212)
-private val HeaderBackground = Color(0xFF161212)
-private val AccentPrimary = Color(0xFFE63946)
-private val TextPrimary = Color(0xFFE8E8E8)
-private val TextSecondary = Color(0xFFB0B0B0)
-private val ButtonBackground = Color(0xFF251A1A)
+private val DarkBackground = Color(0xFFFFFFFF)
+private val SidebarBackground = Color(0xFFFFE6F0)
+private val HeaderBackground = Color(0xFFFFEAF2)
+private val AccentPrimary = Color(0xFFFF5CA6)
+private val TextPrimary = Color(0xFF4A2438)
+private val TextSecondary = Color(0xFF9C7288)
+private val ButtonBackground = Color(0xFFFFE0EE)
 
 class OverlayClickGUI : OverlayWindow() {
 
     private val _layoutParams by lazy {
         super.layoutParams.apply {
             flags = flags or WindowManager.LayoutParams.FLAG_DIM_BEHIND
-            if (Build.VERSION.SDK_INT >= 31) blurBehindRadius = 20
+            // Blur-behind was removed on purpose: it's a real-time compositor
+            // effect recalculated every frame on top of the game still rendering
+            // underneath, and is one of the more common causes of overlay jank
+            // on Android. Dropping it is the single biggest fluidity win here.
             layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-            dimAmount = 0.7f
+            dimAmount = 0.55f
             windowAnimations = android.R.style.Animation_Dialog
             width = WindowManager.LayoutParams.MATCH_PARENT
             height = WindowManager.LayoutParams.MATCH_PARENT
@@ -110,8 +112,8 @@ class OverlayClickGUI : OverlayWindow() {
                     .background(
                         Brush.verticalGradient(
                             listOf(
-                                Color(0xFF0F0A0A),
-                                Color(0xFF121010)
+                                Color(0xFFFFFFFF),
+                                Color(0xFFFFD6E8)
                             )
                         ),
                         RoundedCornerShape(20.dp)
@@ -176,7 +178,7 @@ class OverlayClickGUI : OverlayWindow() {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    "WClient",
+                    "Gato Client",
                     color = AccentPrimary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -297,13 +299,13 @@ class OverlayClickGUI : OverlayWindow() {
                 Icon(
                     painter = painterResource(category.iconResId),
                     contentDescription = category.name,
-                    tint = if (isSelected) AccentPrimary else Color(0xFF666666),
+                    tint = if (isSelected) AccentPrimary else Color(0xFFB88098),
                     modifier = Modifier.size(20.dp)
                 )
             }
             Text(
                 text = category.name,
-                color = if (isSelected) AccentPrimary else Color(0xFF666666),
+                color = if (isSelected) AccentPrimary else Color(0xFFB88098),
                 fontSize = 9.sp,
                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                 maxLines = 1,

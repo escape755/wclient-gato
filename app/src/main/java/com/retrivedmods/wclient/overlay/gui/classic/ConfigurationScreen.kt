@@ -25,11 +25,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-private val CardBackgroundExpanded = Color(0xFF1A1212)
-private val AccentPrimary = Color(0xFFE63946)
-private val TextPrimary = Color(0xFFE8E8E8)
-private val TextTertiary = Color(0xFF888888)
-private val ButtonBackground = Color(0xFF251A1A)
+private val CardBackgroundExpanded = Color(0xFFFFE6F0)
+private val AccentPrimary = Color(0xFFFF5CA6)
+private val TextPrimary = Color(0xFF4A2438)
+private val TextTertiary = Color(0xFFA97D93)
+private val ButtonBackground = Color(0xFFFFE0EE)
 
 @Composable
 fun ConfigurationScreen(
@@ -78,6 +78,41 @@ fun ConfigurationScreen(
                 }
             }
         )
+        CreditsCard()
+    }
+}
+
+@Composable
+private fun CreditsCard() {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.elevatedCardElevation(0.dp),
+        colors = CardDefaults.elevatedCardColors(containerColor = CardBackgroundExpanded)
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = "Credits",
+                color = TextTertiary,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = "ESC5P5",
+                color = TextPrimary,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = "Gato",
+                color = TextPrimary,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 
