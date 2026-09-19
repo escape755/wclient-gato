@@ -1,0 +1,136 @@
+package com.retrivedmods.wclient.game.module.motion
+
+import com.retrivedmods.wclient.game.InterceptablePacket
+import com.retrivedmods.wclient.game.Module
+import com.retrivedmods.wclient.game.ModuleCategory
+import org.cloudburstmc.math.vector.Vector3f
+import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData
+import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket
+import org.cloudburstmc.protocol.bedrock.packet.SetEntityMotionPacket
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
+
+/**
+ * Port of Gato Client's BypassFly module (game/module/motion/BypassFlyModule.kt),
+ * ported by request, unchanged behavior and settings. Injects a client-bound
+ * SetEntityMotionPacket on every PlayerAuthInputPacket, same approach as Gato's
+ * own FlyModule/MotionFlyModule use in this codebase.
+ */
+class BypassFlyModule : Module("BypassFly", ModuleCategory.Motion) {
+
+    private var initialH by floatValue("Initial Horizontal", 2.42f, 0.1f..3.0f)
+    private var initialV by floatValue("Initial Vertical", 1.62f, 0.1f..3.0f)
+    private var initBypH by floatValue("Initial Bypass H", 1.1585f, 0.1f..3.0f)
+    private var initBypV by floatValue("Initial Bypass V", 1.086f, 0.1f..3.0f)
+    private var finalH by floatValue("Final Horizont", 2.18f, 0.1f..3.0f)
+    private var finalV by floatValue("Final Vertical", 1.42f, 0.1f..3.0f)
+    private var finalBypH by floatValue("Final Bypass H", 1.09f, 0.1f..3.0f)
+    private var finalBypV by floatValue("Final Bypass V", 1.05f, 0.1f..3.0f)
+    private var glide by floatValue("Glide", -0.1266f, -0.2f..0.2f)
+    private var releaseDelay by floatValue("Release Delay", 0.09f, 0.0f..0.5f)
+    private var descentSpeed by floatValue("Descent Speed", 4.2997f, 0.1f..5.0f)
+    private var descentH by floatValue("Descent Horizontal", 1.1f, 0.1f..3.0f)
+    private var descensoAlternado by boolValue("Descenso Alternado", true)
+
+    private var bypassPhase = false
+    private var phaseStartNs = 0L
+    private var altTick = 0
+
+    override fun onEnabled() {
+        super.onEnabled()
+        bypassPhase = false
+    }
+
+    override fun onDisabled() {
+        super.onDisabled()
+        bypassPhase = false
+    }
+
+    override fun beforePacketBound(interceptablePacket: InterceptablePacket) {
+        if (!isEnabled || !isSessionCreated) return
+
+        val packet = interceptablePacket.packet as? PlayerAuthInputPacket ?: return
+
+        val input = packet.inputData
+        val pos = packet.position
+
+        var t = sqrt(pos.z * pos.z + pos.x * pos.x) / 5500000f
+        if (t > 1f) t = 1f
+        val bypH = initBypH + (finalBypH - initBypH) * t
+        val normH = initialH + (finalH - initialH) * t
+        val normV = initialV + (finalV - initialV) * t
+        val bypV = initBypV + (finalBypV - initBypV) * t
+
+        val w = input.contains(PlayerAuthInputData.UP)
+        val a = input.contains(PlayerAuthInputData.LEFT)
+        val s = input.contains(PlayerAuthInputData.DOWN)
+        val d = input.contains(PlayerAuthInputData.RIGHT)
+        val space = input.contains(PlayerAuthInputData.JUMPING)
+        val shift = input.contains(PlayerAuthInputData.SNEAKING)
+        val moving = w || a || s || d
+
+        var bypassActive = false
+        val now = System.nanoTime()
+        if (space && moving) {
+            bypassPhase = true
+            phaseStartNs = now
+            bypassActive = true
+        } else if (bypassPhase) {
+            bypassActive = true
+            val secs = (now - phaseStartNs) / 1e9f
+            if (secs >= releaseDelay) {
+                bypassPhase = false
+                bypassActive = false
+            }
+        }
+
+        val vy: Float = if (shift) {
+            -descentSpeed
+        } else {
+            glide + (if (space) (if (bypassActive) bypV else normV) else 0f)
+        }
+
+        if (!moving) {
+            sendMotion(0f, vy, 0f)
+            return
+        }
+
+        val yaw = packet.rotation.y
+        val off = if (w) {
+            (if (a) -45f else (if (d) 45f else 0f))
+        } else if (s) {
+            (if (a) -135f else (if (d) 135f else 180f))
+        } else {
+            (if (a) -90f else (if (d) 90f else 0f))
+        }
+        val rad = Math.toRadians((yaw + off + 90f).toDouble())
+
+        val hit = input.contains(PlayerAuthInputData.HORIZONTAL_COLLISION) ||
+                input.contains(PlayerAuthInputData.AUTO_JUMPING_IN_WATER)
+
+        val speed = when {
+            shift -> descentH
+            hit -> 2.0f
+            bypassActive -> bypH
+            else -> normH
+        }
+
+        if (shift && descensoAlternado) {
+            if (altTick++ % 2 == 0) {
+                sendMotion(cos(rad).toFloat() * speed, glide, sin(rad).toFloat() * speed)
+            } else {
+                sendMotion(0f, -descentSpeed, 0f)
+            }
+            return
+        }
+        sendMotion(cos(rad).toFloat() * speed, vy, sin(rad).toFloat() * speed)
+    }
+
+    private fun sendMotion(x: Float, y: Float, z: Float) {
+        session.clientBound(SetEntityMotionPacket().apply {
+            runtimeEntityId = session.localPlayer.runtimeEntityId
+            motion = Vector3f.from(x, y, z)
+        })
+    }
+}
