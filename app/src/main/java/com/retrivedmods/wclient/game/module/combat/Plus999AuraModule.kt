@@ -332,7 +332,7 @@ class Plus999AuraModule : Module("+999aura", ModuleCategory.Combat) {
     private fun asin(f: Float): Float = kotlin.math.asin(f) // raw: NaN propagates like the binary
 
     private fun hurtTimeOf(e: Entity): Int = (e.metadata[EntityDataTypes.HURT_TICKS] as? Int) ?: 0
-    private fun onGroundOf(e: Entity): Boolean = e.onGround
+    private fun onGroundOf(e: Entity): Boolean = e.metadata.flags.contains(EntityFlag.ON_GROUND)
 
     // ===== target snapshot =====
     private class TData(
