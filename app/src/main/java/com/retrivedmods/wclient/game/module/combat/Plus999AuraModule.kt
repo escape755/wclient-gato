@@ -332,7 +332,10 @@ class Plus999AuraModule : Module("+999aura", ModuleCategory.Combat) {
     private fun asin(f: Float): Float = kotlin.math.asin(f) // raw: NaN propagates like the binary
 
     private fun hurtTimeOf(e: Entity): Int = (e.metadata[EntityDataTypes.HURT_TICKS] as? Int) ?: 0
-    private fun onGroundOf(e: Entity): Boolean = e.metadata.flags.contains(EntityFlag.ON_GROUND)
+    // Esta versión del protocolo no trae EntityFlag.ON_GROUND (no existe en este
+    // WClient) — se aproxima por velocidad vertical, suficiente para el uso que le
+    // da este módulo (una señal más entre varias, no una condición crítica).
+    private fun onGroundOf(e: Entity): Boolean = kotlin.math.abs(e.motionY) < 0.01f
 
     // ===== target snapshot =====
     private class TData(
