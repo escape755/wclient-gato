@@ -92,7 +92,7 @@ private fun AppInfoSection() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "WClient",
+                text = "Gato Client",
                 style = MaterialTheme.typography.displaySmall,
                 color = WColors.Primary
             )
@@ -155,7 +155,7 @@ private fun LicenseSection() {
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         BulletPoint("Personal use and modification")
-                        BulletPoint("Creating content using WClient")
+                        BulletPoint("Creating content using Gato Client")
                         BulletPoint("Redistributing source code with GPLv3 license")
                     }
                 }

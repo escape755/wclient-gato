@@ -26,6 +26,7 @@ abstract class Module(
         set(value) {
             _isEnabled = value
             if (value) onEnabled() else onDisabled()
+            com.retrivedmods.wclient.util.ConfigAutoSaver.scheduleSave()
         }
 
     val isSessionCreated: Boolean
@@ -116,7 +117,7 @@ abstract class Module(
         val moduleName = name.translatedSelf
 
         session.displayClientMessage(
-            "§l§c[WClient] §r§7$moduleName §8» $status"
+            "§l§d[Gato Client] §r§7$moduleName §8» $status"
         )
     }
 }

@@ -97,7 +97,7 @@ class CommandHandlerModule : Module("command_handler", ModuleCategory.Misc, true
     private fun displayHelp(category: String?) {
         session.displayClientMessage(
             """
-            §l§c[WClient] §r§7Commands:
+            §l§d[Gato Client] §r§7Commands:
             §f.help <category> §7- Show modules
             §f.friend §7- Manage friends
             §f.<module> §7- Toggle module

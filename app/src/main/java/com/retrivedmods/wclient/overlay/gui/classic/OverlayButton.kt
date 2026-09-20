@@ -66,7 +66,7 @@ class OverlayButton : OverlayWindow() {
                 }
         ) {
             Image(
-                painter = painterResource(R.drawable.w_overlay_icon),
+                painter = painterResource(R.drawable.gato_overlay_icon),
                 contentDescription = "Overlay Button Icon",
                 modifier = Modifier
                     .padding(0.dp)

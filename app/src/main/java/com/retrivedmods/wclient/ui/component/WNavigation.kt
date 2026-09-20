@@ -79,7 +79,7 @@ private fun CompactWHeader() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "W",
+            text = "G",
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Light,
             color = WColors.Primary.copy(alpha = glowAlpha)

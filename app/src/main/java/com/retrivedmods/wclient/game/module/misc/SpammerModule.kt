@@ -16,7 +16,7 @@ class SpammerModule : Module("Spammer", ModuleCategory.Misc) {
     }
 
 
-    private val message by stringValue("Message", "WClient is Best", listOf())
+    private val message by stringValue("Message", "Gato Client is Best", listOf())
     private val delay by intValue("Delay", 1000, 50..10000)
     private val mode by enumValue("Mode", SpamMode.REPEAT, SpamMode::class.java)
     private val randomize by boolValue("Randomize", false)

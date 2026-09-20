@@ -18,37 +18,37 @@ import androidx.compose.ui.unit.sp
 
 object WColors {
     // Primary reds
-    val Primary = Color(0xFFEF4444)
-    val PrimaryLight = Color(0xFFF87171)
-    val PrimaryDark = Color(0xFFDC2626)
+    val Primary = Color(0xFFFF5CA6)
+    val PrimaryLight = Color(0xFFFF8FC5)
+    val PrimaryDark = Color(0xFFD6407F)
     val OnPrimary = Color(0xFFFFFFFF)
 
     // Secondary for contrast (cool slate)
-    val Secondary = Color(0xFF64748B)
-    val SecondaryVariant = Color(0xFF475569)
-    val SecondaryLight = Color(0xFF94A3B8)
+    val Secondary = Color(0xFFB88098)
+    val SecondaryVariant = Color(0xFF8C6478)
+    val SecondaryLight = Color(0xFFD9AFC2)
     val OnSecondary = Color(0xFFFFFFFF)
 
     // Accent red/pink for glow effects
-    val Accent = Color(0xFFF43F5E)
-    val AccentLight = Color(0xFFFB7185)
-    val AccentDark = Color(0xFFBE123C)
+    val Accent = Color(0xFFFF7CB8)
+    val AccentLight = Color(0xFFFFB3D9)
+    val AccentDark = Color(0xFFC23573)
 
 
-    val Background = Color(0xFF0B0A10)
-    val Surface = Color(0xFF121016)
-    val SurfaceVariant = Color(0xFF1D1A22)
-    val SurfaceContainer = Color(0xFF17141C)
+    val Background = Color(0xFFFFFFFF)
+    val Surface = Color(0xFFFFF3F8)
+    val SurfaceVariant = Color(0xFFFFE6F0)
+    val SurfaceContainer = Color(0xFFFFEAF3)
 
-    val OnBackground = Color(0xFFF8FAFC)
-    val OnSurface = Color(0xFFE2E8F0)
-    val OnSurfaceVariant = Color(0xFF9AA3B2)
+    val OnBackground = Color(0xFF4A2438)
+    val OnSurface = Color(0xFF4A2438)
+    val OnSurfaceVariant = Color(0xFF9C7288)
 
     val Error = Color(0xFFFF4D4D)
     val ErrorLight = Color(0xFFFF8080)
 
-    val Border = Color(0xFF2B2631)
-    val BorderLight = Color(0xFF3A3441)
+    val Border = Color(0xFFFFC2DD)
+    val BorderLight = Color(0xFFFF8FC0)
 
     val Overlay = Color(0x80000000)
 
@@ -57,7 +57,7 @@ object WColors {
     val MinimapGrid = Color(0x66A9A9A9)
     val MinimapCrosshair = Color(0x80808080)
     val MinimapPlayerMarker = Color(0xFFFFFFFF)
-    val MinimapNorth = Color(0xFFEF4444)   // match primary red
+    val MinimapNorth = Color(0xFFFF5CA6)   // match primary red
     val MinimapEntityClose = Color(0xFFFF3B3B)
     val MinimapEntityFar = Color(0xFFFFD166)
     val MinimapZoom = 1.0f
@@ -65,22 +65,22 @@ object WColors {
 }
 
 object ClickGUIColors {
-    val PrimaryBackground = Color(0xFF0B0B11)
-    val SecondaryBackground = Color(0xFF14131B)
+    val PrimaryBackground = Color(0xFFFFFFFF)
+    val SecondaryBackground = Color(0xFFFFF3F8)
 
     val AccentColor = WColors.Primary
     val AccentColorVariant = WColors.AccentLight
 
-    val PrimaryText = Color(0xFFFFFFFF)
-    val SecondaryText = Color(0xFF9AA3B2)
+    val PrimaryText = Color(0xFF4A2438)
+    val SecondaryText = Color(0xFF9C7288)
 
-    val PanelBackground = Color(0xF014131A)
-    val PanelBorder = Color(0x60EF4444)
+    val PanelBackground = Color(0xF0FFF3F8)
+    val PanelBorder = Color(0x60FF5CA6)
 
     val ModuleEnabled = AccentColor
-    val ModuleDisabled = Color(0xFF23222B)
+    val ModuleDisabled = Color(0xFFFFE0EE)
 
-    val SliderTrack = Color(0xFF2C2933)
+    val SliderTrack = Color(0xFFFFC2DD)
     val SliderThumb = AccentColor
     val SliderFill = AccentColor
 
@@ -142,18 +142,18 @@ private val WLightColorScheme = lightColorScheme(
     tertiaryContainer = WColors.Accent.copy(alpha = 0.12f),
     onTertiaryContainer = WColors.Accent,
 
-    background = Color(0xFFFAFAFA),
-    onBackground = Color(0xFF111111),
+    background = Color(0xFFFFF3F8),
+    onBackground = Color(0xFF4A2438),
     surface = Color(0xFFFFFFFF),
-    onSurface = Color(0xFF121212),
-    surfaceVariant = Color(0xFFF3F3F4),
-    onSurfaceVariant = Color(0xFF545B66),
-    surfaceContainer = Color(0xFFE9E9EC),
+    onSurface = Color(0xFF4A2438),
+    surfaceVariant = Color(0xFFFFE6F0),
+    onSurfaceVariant = Color(0xFF9C7288),
+    surfaceContainer = Color(0xFFFFEAF3),
 
     error = WColors.Error,
     onError = WColors.OnPrimary,
-    outline = Color(0xFFE5E7EB),
-    outlineVariant = Color(0xFFF1F5F9)
+    outline = Color(0xFFFFC2DD),
+    outlineVariant = Color(0xFFFFE0EE)
 )
 
 
@@ -260,7 +260,7 @@ val WTypography = Typography(
 
 @Composable
 fun WClientTheme(
-    darkTheme: Boolean = true,
+    darkTheme: Boolean = false,
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {

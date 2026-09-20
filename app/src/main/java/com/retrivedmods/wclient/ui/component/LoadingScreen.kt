@@ -54,9 +54,10 @@ fun LoadingScreen(onDone: () -> Unit) {
         onDone()
     }
 
-    val backgroundColor = Color(0xFF0A0A0A)
-    val primaryColor = Color(0xFFD32F2F)
-    val secondaryColor = Color(0xFFFF6B6B)
+    val backgroundColor = Color(0xFFFFFFFF)
+    val primaryColor = Color(0xFFFF5CA6)
+    val secondaryColor = Color(0xFFFF8FC5)
+    val onLightColor = Color(0xFF4A2438)
 
     val infiniteTransition = rememberInfiniteTransition(label = "InfiniteAnimations")
 
@@ -115,7 +116,7 @@ fun LoadingScreen(onDone: () -> Unit) {
             .fillMaxSize()
             .background(
                 Brush.radialGradient(
-                    colors = listOf(backgroundColor, Color(0xFF1A1A1A)),
+                    colors = listOf(backgroundColor, Color(0xFFFFD6E8)),
                     radius = 800f
                 )
             )
@@ -133,7 +134,7 @@ fun LoadingScreen(onDone: () -> Unit) {
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = "WClient",
+                text = "Gato Client",
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Black,
                 color = primaryColor.copy(alpha = textGlow),
@@ -160,7 +161,7 @@ fun LoadingScreen(onDone: () -> Unit) {
                     .width(280.dp)
                     .height(16.dp)
                     .clip(RoundedCornerShape(50))
-                    .background(Color.White.copy(alpha = 0.08f))
+                    .background(primaryColor.copy(alpha = 0.10f))
                     .drawBehind {
                         drawRoundRect(
                             color = primaryColor.copy(alpha = glowIntensity * 0.2f),
@@ -227,7 +228,7 @@ fun LoadingScreen(onDone: () -> Unit) {
                 text = loadingText,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
-                color = Color.White.copy(alpha = 0.6f),
+                color = onLightColor.copy(alpha = 0.7f),
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .alpha(0.7f),

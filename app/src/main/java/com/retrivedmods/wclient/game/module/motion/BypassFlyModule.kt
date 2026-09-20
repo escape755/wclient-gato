@@ -36,15 +36,21 @@ class BypassFlyModule : Module("BypassFly", ModuleCategory.Motion) {
     private var bypassPhase = false
     private var phaseStartNs = 0L
     private var altTick = 0
+    private var smoothedSpeed: Float? = null
+    private var smoothedVy: Float? = null
 
     override fun onEnabled() {
         super.onEnabled()
         bypassPhase = false
+        smoothedSpeed = null
+        smoothedVy = null
     }
 
     override fun onDisabled() {
         super.onDisabled()
         bypassPhase = false
+        smoothedSpeed = null
+        smoothedVy = null
     }
 
     override fun beforePacketBound(interceptablePacket: InterceptablePacket) {
@@ -90,9 +96,11 @@ class BypassFlyModule : Module("BypassFly", ModuleCategory.Motion) {
         } else {
             glide + (if (space) (if (bypassActive) bypV else normV) else 0f)
         }
+        val smoothVy = (smoothedVy ?: vy).let { it + (vy - it) * 0.6f }
+        smoothedVy = smoothVy
 
         if (!moving) {
-            sendMotion(0f, vy, 0f)
+            sendMotion(0f, smoothVy, 0f)
             return
         }
 
@@ -115,16 +123,18 @@ class BypassFlyModule : Module("BypassFly", ModuleCategory.Motion) {
             bypassActive -> bypH
             else -> normH
         }
+        val smoothSpeed = (smoothedSpeed ?: speed).let { it + (speed - it) * 0.6f }
+        smoothedSpeed = smoothSpeed
 
         if (shift && descensoAlternado) {
             if (altTick++ % 2 == 0) {
-                sendMotion(cos(rad).toFloat() * speed, glide, sin(rad).toFloat() * speed)
+                sendMotion(cos(rad).toFloat() * smoothSpeed, glide, sin(rad).toFloat() * smoothSpeed)
             } else {
                 sendMotion(0f, -descentSpeed, 0f)
             }
             return
         }
-        sendMotion(cos(rad).toFloat() * speed, vy, sin(rad).toFloat() * speed)
+        sendMotion(cos(rad).toFloat() * smoothSpeed, smoothVy, sin(rad).toFloat() * smoothSpeed)
     }
 
     private fun sendMotion(x: Float, y: Float, z: Float) {

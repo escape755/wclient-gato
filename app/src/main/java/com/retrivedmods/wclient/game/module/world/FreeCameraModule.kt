@@ -86,7 +86,7 @@ class FreeCameraModule : Module("free_camera", ModuleCategory.World) {
 
             GlobalScope.launch {
                 for (i in 5 downTo 1) {
-                    val countdownMessage = "§l§b[WClient] §r§7FreeCam will enable in §e$i §7seconds"
+                    val countdownMessage = "§l§d[Gato Client] §r§7FreeCam will enable in §e$i §7seconds"
                     sendCountdownMessage(countdownMessage)
                     delay(1000)
                 }

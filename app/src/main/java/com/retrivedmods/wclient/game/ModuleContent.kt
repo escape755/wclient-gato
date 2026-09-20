@@ -1,6 +1,5 @@
 package com.retrivedmods.wclient.game
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -18,7 +17,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
@@ -46,8 +44,6 @@ import androidx.compose.ui.util.fastForEach
 import com.retrivedmods.wclient.R
 import com.retrivedmods.wclient.overlay.OverlayManager
 import com.retrivedmods.wclient.util.translatedSelf
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 
@@ -65,41 +61,25 @@ private val ErrorRed = Color(0xFFCF222E)
 
 private val moduleCache = HashMap<ModuleCategory, List<Module>>()
 
-private fun fetchCachedModules(category: ModuleCategory): List<Module> {
-    val cached = moduleCache[category] ?: ModuleManager.modules
-        .filter { !it.private && it.category === category }
-    moduleCache[category] = cached
-    return cached
-}
+private fun fetchCachedModules(category: ModuleCategory): List<Module> =
+    moduleCache.getOrPut(category) {
+        ModuleManager.modules.filter { !it.private && it.category === category }
+    }
 
 @Composable
 fun ModuleContent(moduleCategory: ModuleCategory) {
-    var modules: List<Module>? by remember(moduleCategory) { mutableStateOf(moduleCache[moduleCategory]) }
+    // Filtering an already-in-memory list is sub-millisecond work - no need for
+    // a coroutine/IO dispatch or a loading spinner here, that was adding a
+    // visible stall to every single category switch (the most frequent action
+    // in this menu).
+    val list = remember(moduleCategory) { fetchCachedModules(moduleCategory) }
 
-    LaunchedEffect(modules) {
-        if (modules == null) withContext(Dispatchers.IO) { modules = fetchCachedModules(moduleCategory) }
-    }
-
-    Crossfade(
-        targetState = modules,
-        animationSpec = tween(durationMillis = 300)
-    ) { list ->
-        if (list != null) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(list.size) { i -> ModuleCard(list[i]) }
-            }
-        } else {
-            Box(Modifier.fillMaxSize()) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                    color = AccentPrimary
-                )
-            }
-        }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(list.size, key = { list[it].name }) { i -> ModuleCard(list[i]) }
     }
 }
 

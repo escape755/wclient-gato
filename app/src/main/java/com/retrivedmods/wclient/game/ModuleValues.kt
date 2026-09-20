@@ -50,6 +50,7 @@ sealed class Value<T>(val name: String, val defaultValue: T) {
 
     operator fun setValue(from: Any, property: KProperty<*>, newValue: T) {
         value = newValue
+        com.retrivedmods.wclient.util.ConfigAutoSaver.scheduleSave()
     }
 
     abstract fun toJson(): JsonElement

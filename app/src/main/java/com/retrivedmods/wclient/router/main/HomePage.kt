@@ -413,7 +413,7 @@ private fun WelcomeCard() {
                         .size(28.dp)
                 )
                 Column {
-                    Text("WClient", style = MaterialTheme.typography.headlineMedium, color = WColors.OnSurface)
+                    Text("Gato Client", style = MaterialTheme.typography.headlineMedium, color = WColors.OnSurface)
                     Text("Bedrock, but smoother.", style = MaterialTheme.typography.bodyLarge, color = WColors.Primary)
                 }
             }
