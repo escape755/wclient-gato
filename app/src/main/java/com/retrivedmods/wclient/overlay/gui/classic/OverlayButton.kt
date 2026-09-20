@@ -38,6 +38,14 @@ class OverlayButton : OverlayWindow() {
 
     private val overlayClickGUI by lazy { OverlayClickGUI() }
 
+    // updateViewLayout() is a WindowManager IPC + full relayout - calling it on
+    // every raw pointer-move sample (which can fire well above screen refresh
+    // rate) is what made dragging this button feel stuck. Position is still
+    // updated every event; only the expensive call is throttled to roughly
+    // display-refresh pace, with a final flush on release so it always ends
+    // up exactly where the finger left it.
+    private var lastDragUpdateTime = 0L
+
     @Composable
     override fun Content() {
         val context = LocalContext.current
@@ -58,10 +66,18 @@ class OverlayButton : OverlayWindow() {
             modifier = Modifier
                 .padding(5.dp)
                 .pointerInput(Unit) {
-                    detectDragGestures { _, drag ->
+                    detectDragGestures(
+                        onDragEnd = {
+                            windowManager.updateViewLayout(composeView, _layoutParams)
+                        }
+                    ) { _, drag ->
                         _layoutParams.x += drag.x.toInt()
                         _layoutParams.y += drag.y.toInt()
-                        windowManager.updateViewLayout(composeView, _layoutParams)
+                        val now = System.currentTimeMillis()
+                        if (now - lastDragUpdateTime >= 8L) {
+                            lastDragUpdateTime = now
+                            windowManager.updateViewLayout(composeView, _layoutParams)
+                        }
                     }
                 }
         ) {

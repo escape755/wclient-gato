@@ -4,21 +4,11 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import com.retrivedmods.wclient.application.AppContext
-import com.retrivedmods.wclient.game.module.combat.ACAModule
 import com.retrivedmods.wclient.game.module.combat.AntiCrystalModule
 import com.retrivedmods.wclient.game.module.combat.AntiKnockbackModule
 import com.retrivedmods.wclient.game.module.combat.CrystalSmashModule
-import com.retrivedmods.wclient.game.module.combat.EnemyHunterModule
-import com.retrivedmods.wclient.game.module.combat.HitAndRunModule
 import com.retrivedmods.wclient.game.module.combat.HitboxModule
-import com.retrivedmods.wclient.game.module.combat.KillauraModule
-import com.retrivedmods.wclient.game.module.combat.TriggerBotModule
-import com.retrivedmods.wclient.game.module.combat.WAuraModule
-import com.retrivedmods.wclient.game.module.combat.AutoFightModule
-import com.retrivedmods.wclient.game.module.combat.AutoHvHModule
 import com.retrivedmods.wclient.game.module.combat.AutoTotemModule
-import com.retrivedmods.wclient.game.module.combat.HotbarSwitcherModule
-import com.retrivedmods.wclient.game.module.combat.InfiniteAuraModule
 import com.retrivedmods.wclient.game.module.combat.GatoAuraModule        // NUEVO (port de Gato Client)
 import com.retrivedmods.wclient.game.module.combat.GatoAuraXModule       // NUEVO (port de Gato Client)
 import com.retrivedmods.wclient.game.module.combat.Plus999AuraModule     // NUEVO (port de Gato Client)
@@ -34,6 +24,7 @@ import com.retrivedmods.wclient.game.module.misc.FakeXPModule
 import com.retrivedmods.wclient.game.module.misc.MinerModule
 import com.retrivedmods.wclient.game.module.misc.NoChatModule
 import com.retrivedmods.wclient.game.module.misc.PieChartModule
+import com.retrivedmods.wclient.game.module.misc.PopCounterModule
 import com.retrivedmods.wclient.game.module.misc.PositionLoggerModule
 import com.retrivedmods.wclient.game.module.misc.ReplayModule
 import com.retrivedmods.wclient.game.module.misc.ChestStealerModule
@@ -91,22 +82,12 @@ object ModuleManager {
     init {
         with(_modules) {
             // Combat
-            add(WAuraModule())
-            add(HotbarSwitcherModule())
-            add(KillauraModule())
-            add(AutoFightModule())
-            add(InfiniteAuraModule())
-            add(ACAModule())
             add(AutoTotemModule())
-            add(AutoHvHModule())
-            add(EnemyHunterModule())
             add(AntiKnockbackModule())
 
             add(AntiCrystalModule())
-            add(HitAndRunModule())
             add(HitboxModule())
             add(CrystalSmashModule())
-            add(TriggerBotModule())
             add(GatoAuraModule())          // NUEVO — port de GatoAura (Gato Client)
             add(GatoAuraXModule())         // NUEVO — port de GatoAuraX (Gato Client)
             add(Plus999AuraModule())       // NUEVO — port de +999aura (Gato Client)
@@ -164,6 +145,7 @@ object ModuleManager {
             add(CommandHandlerModule())
             add(ReplayModule())
             add(PieChartModule())
+            add(PopCounterModule())
             add(FakeDeathModule())
             add(FakeXPModule())
             add(MinerModule())

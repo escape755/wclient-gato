@@ -42,6 +42,11 @@ class OverlayShortcutButton(
     override val layoutParams: WindowManager.LayoutParams
         get() = _layoutParams
 
+    // See OverlayButton for why this exists: updateViewLayout() is a
+    // WindowManager IPC + full relayout, too heavy to call on every raw
+    // pointer-move sample without the drag feeling stuck.
+    private var lastDragUpdateTime = 0L
+
     @Composable
     override fun Content() {
         val context = LocalContext.current
@@ -79,11 +84,20 @@ class OverlayShortcutButton(
                 .height(44.dp)
                 .padding(6.dp)
                 .pointerInput(Unit) {
-                    detectDragGestures { _, drag ->
+                    detectDragGestures(
+                        onDragEnd = {
+                            windowManager.updateViewLayout(composeView, _layoutParams)
+                            updateShortcut()
+                        }
+                    ) { _, drag ->
                         _layoutParams.x += drag.x.toInt()
                         _layoutParams.y += drag.y.toInt()
-                        windowManager.updateViewLayout(composeView, _layoutParams)
-                        updateShortcut()
+                        val now = System.currentTimeMillis()
+                        if (now - lastDragUpdateTime >= 8L) {
+                            lastDragUpdateTime = now
+                            windowManager.updateViewLayout(composeView, _layoutParams)
+                            updateShortcut()
+                        }
                     }
                 }
                 .shadow(8.dp, RoundedCornerShape(14.dp))

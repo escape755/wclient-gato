@@ -277,14 +277,8 @@ private fun IntValueContent(value: IntValue) {
             disabledInactiveTickColor = Color(0xFFFFEAF3)
         )
 
-        val animated by animateFloatAsState(
-            targetValue = value.value.toFloat(),
-            animationSpec = spring(stiffness = Spring.StiffnessLow),
-            label = "intSlider"
-        )
-
         Slider(
-            value = animated,
+            value = value.value.toFloat(),
             onValueChange = {
                 val next = it.roundToInt()
                 if (value.value != next) value.value = next
