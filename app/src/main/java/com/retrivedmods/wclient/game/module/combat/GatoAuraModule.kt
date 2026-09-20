@@ -40,7 +40,7 @@ class GatoAuraModule : Module("GatoAura", ModuleCategory.Combat) {
     // --- named selectors (horizontal chip list in the UI) ---
     private class Mode(override val name: String, val idx: Int) : ListItem
 
-    private val rotModes = listOf(Mode("None", 0), Mode("Normal", 1), Mode("Strafe", 2))
+    private val rotModes = listOf(Mode("Unified", 3), Mode("None", 0), Mode("Normal", 1), Mode("Strafe", 2))
     private val hitTypes = listOf(Mode("Single", 0), Mode("Multi", 1))
     private val targetPriorities = listOf(Mode("Distance", 0), Mode("Health", 1))
     private val weaponModes = listOf(Mode("None", 0), Mode("Switch", 1), Mode("Spoof", 2))
@@ -50,7 +50,7 @@ class GatoAuraModule : Module("GatoAura", ModuleCategory.Combat) {
     private var wallRange by floatValue("WallRange", 0f, 0f..40f) // sin LOS en relay
     private var interval by intValue("Interval", 1, 0..20)
     private var java by boolValue("Java Cooldown", true)
-    private var rotModeItem by listValue("Rotations", rotModes[1], rotModes.toSet())
+    private var rotModeItem by listValue("Rotations", rotModes[0], rotModes.toSet())
     private var rotationSpeed by intValue("Rot Speed", 10, 10..180)
 
     private var adaptiveRot by boolValue("Adaptive Rot", false)
@@ -366,6 +366,29 @@ class GatoAuraModule : Module("GatoAura", ModuleCategory.Combat) {
 
     private fun spoofRotation(packet: PlayerAuthInputPacket) {
         if (!shouldRot || targetList.isEmpty()) return
+
+        if (rotMode == 3) {
+            val localPlayer = session.localPlayer
+            val target = targetList[0]
+            val (w, h) = targetDims(target)
+            val ctx = GatoAuraXRots.Ctx(50f, 0.9f, 8f, 1f, 3f, 0.7f, 1.5f, 0.1f, 0.1f, 8, 20, randomize, 0f)
+            ctx.rotPitch = currentPitch
+            ctx.rotYaw = currentYaw
+            val env = GatoAuraXRots.Env(
+                localPlayer.posX, localPlayer.posY, localPlayer.posZ,
+                localPlayer.motionX, localPlayer.motionY, localPlayer.motionZ,
+                false, false, false, false, false, System.nanoTime() / 1e9f
+            )
+            GatoAuraXRots.unified(
+                ctx,
+                GatoAuraXRots.Target(target.posX, target.posY, target.posZ, target.motionX, target.motionY, target.motionZ, target.rotationYaw, w, h),
+                env
+            )
+            currentPitch = ctx.rotPitch
+            currentYaw = ctx.rotYaw
+            packet.rotation = Vector3f.from(currentPitch, packet.rotation.y, currentYaw)
+            return
+        }
 
         var angleDiff = targetYaw - currentYaw
         while (angleDiff < -180f) angleDiff += 360f

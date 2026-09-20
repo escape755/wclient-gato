@@ -41,7 +41,7 @@ class GatoAuraXModule : Module("GatoAuraX", ModuleCategory.Combat) {
 
     private val targetModes = listOf(Mode("Single", 0), Mode("Multi", 1))
     private val rotationModes = listOf(
-        Mode("None", 0), Mode("Smooth", 1), Mode("Nemesis", 2), Mode("Strafe", 3),
+        Mode("Unified", 13), Mode("None", 0), Mode("Smooth", 1), Mode("Nemesis", 2), Mode("Strafe", 3),
         Mode("Vortex", 4), Mode("FrontStrafe", 5), Mode("AirHvH Pro", 6), Mode("FrontsX", 7),
         Mode("Astral", 8), Mode("Atomic", 9), Mode("Syntax", 10), Mode("Cortex", 11), Mode("Alpha", 12)
     )
@@ -244,7 +244,7 @@ class GatoAuraXModule : Module("GatoAuraX", ModuleCategory.Combat) {
         while (fyaw < -180f) fyaw += 360f
 
         val m = rotationMode
-        if (m != 3 && m > 0 && m < 13) {
+        if (m != 3 && m > 0 && m <= 13) {
             rotOut[0] = fpitch
             rotOut[1] = fyaw
             headYawOut = fyaw
@@ -299,6 +299,7 @@ class GatoAuraXModule : Module("GatoAuraX", ModuleCategory.Combat) {
                     10 -> GatoAuraXRots.syntax(ctx, snap, env)
                     11 -> GatoAuraXRots.cortex(ctx, snap, env)
                     12 -> GatoAuraXRots.alpha(ctx, snap, env)
+                    13 -> GatoAuraXRots.unified(ctx, snap, env)
                 }
             }
         }

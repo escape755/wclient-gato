@@ -128,6 +128,73 @@ object GatoAuraXRots {
         return d / 180.0f
     }
 
+    // ===================== Unified (combina lo mejor de las demas) =====================
+    // Pedido explicito: juntar las rotaciones existentes en una sola. Toma la
+    // prediccion de velocidad de smooth(), el suavizado exponencial de
+    // astral(), y le agrega DOS cosas que ninguno de los 13 modos de arriba
+    // aplicaba de forma explicita:
+    //   1) un tope duro de grados-por-tick (lo mas efectivo y simple contra
+    //      un lagback: la mayoria de los anticheats marcan un giro que
+    //      cambia demasiados grados en un solo tick, no la rotacion en si)
+    //   2) un jitter minimo, para no repetir exactamente el mismo delta
+    //      tick tras tick (un patron perfectamente identico es en si mismo
+    //      una señal para algunos anticheats)
+    // Esto NO es una garantia de "0 lagback" ni "100% de hits" - sigue
+    // siendo una rotacion artificial, y cada servidor valida distinto. Es,
+    // sí, la mas conservadora de las 14 disponibles.
+    fun unified(ctx: Ctx, t: Target, env: Env) {
+        val dx0 = t.posX - env.lpX
+        val dy0 = t.posY - env.lpY
+        val dz0 = t.posZ - env.lpZ
+        val dist = sqrt((dx0 * dx0 + dy0 * dy0 + dz0 * dz0).toDouble()).toFloat()
+
+        val k = (dist * 0.12f).coerceAtMost(4f)
+        val dVX = t.velX - env.lpVX
+        val dVY = t.velY - env.lpVY
+        val dVZ = t.velZ - env.lpVZ
+        val aimX = t.posX + dVX * k
+        val aimY = t.posY + dVY * k + t.height * 0.55f + ctx.vertOffset
+        val aimZ = t.posZ + dVZ * k
+
+        val (pitch0, yaw0) = baseRot(ctx, aimX - env.lpX, aimY - env.lpY, aimZ - env.lpZ)
+        var pitch = pitch0
+        var yaw = yaw0
+        while (pitch > 90f) pitch -= 180f
+        while (pitch < -90f) pitch += 180f
+        while (yaw > 180f) yaw -= 360f
+        while (yaw < -180f) yaw += 360f
+
+        var dPitch = pitch - ctx.rotPitch
+        var dYaw = yaw - ctx.rotYaw
+        while (dYaw > 180f) dYaw -= 360f
+        while (dYaw < -180f) dYaw += 360f
+
+        // factor adaptativo por distancia (mismo espiritu que smooth(), piso
+        // y techo mas conservadores)
+        val ff = (7.5f / (dist + 3f)).coerceIn(0.12f, 0.55f)
+
+        var stepYaw = dYaw * ff
+        var stepPitch = dPitch * ff
+
+        // tope duro: 20 a 40 grados por tick segun distancia
+        val maxStep = 20f + (dist * 1.5f).coerceAtMost(20f)
+        stepYaw = stepYaw.coerceIn(-maxStep, maxStep)
+        stepPitch = stepPitch.coerceIn(-maxStep * 0.6f, maxStep * 0.6f)
+
+        val jitter = (Math.random().toFloat() - 0.5f) * 0.6f
+
+        var newYaw = ctx.rotYaw + stepYaw + jitter
+        var newPitch = ctx.rotPitch + stepPitch
+        while (newPitch > 90f) newPitch -= 180f
+        while (newPitch < -90f) newPitch += 180f
+        while (newYaw > 180f) newYaw -= 360f
+        while (newYaw < -180f) newYaw += 360f
+
+        ctx.rotPitch = newPitch
+        ctx.rotYaw = newYaw
+        ctx.headYaw = newYaw
+    }
+
     // ===================== Alpha (Rots1) =====================
     fun alpha(ctx: Ctx, t: Target, env: Env) {
         val tick = ctx.pred50 / 50.0f

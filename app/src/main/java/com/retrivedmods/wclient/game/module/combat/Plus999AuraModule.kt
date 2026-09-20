@@ -55,7 +55,7 @@ class Plus999AuraModule : Module("+999aura", ModuleCategory.Combat) {
 
     private val targetModes = listOf(Mode("Single", 0), Mode("Multi", 1))
     private val rotationModes = listOf(
-        Mode("None", 0), Mode("Silent", 1), Mode("Strafe", 2), Mode("FrontStrafe", 3),
+        Mode("Unified", 9), Mode("None", 0), Mode("Silent", 1), Mode("Strafe", 2), Mode("FrontStrafe", 3),
         Mode("AirHvH Pro", 4), Mode("Adaptive", 5), Mode("Apex", 6), Mode("Spectre", 7), Mode("Aegis", 8)
     )
     private val switchModes = listOf(Mode("None", 0), Mode("Full", 1), Mode("Silent", 2))
@@ -584,6 +584,7 @@ class Plus999AuraModule : Module("+999aura", ModuleCategory.Combat) {
                 6 -> rotApex(snap)
                 7 -> rotSpectre(snap)
                 8 -> rotAegis(snap)
+                9 -> rotUnified(snap)
                 else -> {} // None/Silent: base aim only
             }
         }.onFailure {
@@ -1041,6 +1042,27 @@ class Plus999AuraModule : Module("+999aura", ModuleCategory.Combat) {
             out.y = tp.y + 0.0f * (out.y - tp.y)
             out.z = tp.z + 0.0f * (out.z - tp.z)
         }
+    }
+
+    private fun rotUnified(tgt: TData) {
+        val localPlayer = session.localPlayer
+        val ctx = GatoAuraXRots.Ctx(50f, 0.9f, 8f, 1f, 3f, 0.7f, 1.5f, 0.1f, 0.1f, 8, 20, true, 0f)
+        ctx.rotPitch = rotCtx[0]
+        ctx.rotYaw = rotCtx[1]
+        val env = GatoAuraXRots.Env(
+            localPlayer.posX, localPlayer.posY, localPlayer.posZ,
+            localPlayer.motionX, localPlayer.motionY, localPlayer.motionZ,
+            false, false, false, false, false, gameTimeSec()
+        )
+        GatoAuraXRots.unified(
+            ctx,
+            GatoAuraXRots.Target(tgt.posX, tgt.posY, tgt.posZ, tgt.velX, tgt.velY, tgt.velZ, tgt.yaw, tgt.width, tgt.height),
+            env
+        )
+        rotOut[0] = ctx.rotPitch
+        rotOut[1] = ctx.rotYaw
+        rotCtx[0] = ctx.rotPitch
+        rotCtx[1] = ctx.rotYaw
     }
 
     private fun rotAdaptive(tgt: TData) {
